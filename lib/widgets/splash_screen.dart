@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -11,8 +12,17 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+
+    // Delay de 3 segundos antes de verificar el estado del usuario
     Future.delayed(Duration(seconds: 3), () {
-      Navigator.pushReplacementNamed(context, '/login');
+      FirebaseAuth.instance.authStateChanges().listen((User? user) {
+        if (user != null) {
+          print(user.uid);
+          Navigator.pushReplacementNamed(context, '/logout');
+        } else {
+          Navigator.pushReplacementNamed(context, '/login');
+        }
+      });
     });
   }
 

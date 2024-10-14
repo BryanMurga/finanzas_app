@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "126279978788",
+    "project_id": "restaurantec-47f78",
+    "storage_bucket": "restaurantec-47f78.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:126279978788:android:a1d56bc5bea8be1407edb1",
+        "android_client_info": {
+          "package_name": "com.example.finanzas_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTfjoYLO1WkIMd7YHhGrsEV_heF14q3pk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

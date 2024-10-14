@@ -1,5 +1,6 @@
 import 'package:finanzas_app/modules/auth/send_email.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Asegúrate de importar Firebase Auth
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -17,6 +18,28 @@ class _LoginState extends State<Login> {
     Navigator.pushNamed(context, '/sendEmail');
   }
 
+  Future<void> _signInUser() async {
+    String emailAddress = _email.text.trim();
+    String password = _password.text.trim();
+
+    try {
+      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailAddress,
+        password: password,
+      );
+      // Manejar la navegación o mostrar un mensaje de éxito aquí
+      print('Usuario iniciado sesión: ${credential.user?.email}');
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        print('No se encontró un usuario con ese correo electrónico.');
+      } else if (e.code == 'wrong-password') {
+        print('Contraseña incorrecta proporcionada para ese usuario.');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,8 +52,8 @@ class _LoginState extends State<Login> {
             const SizedBox(height: 16),
             TextFormField(
               decoration: const InputDecoration(
-                hintText: 'Correo electronico',
-                label: Text('Correo electronico'),
+                hintText: 'Correo electrónico',
+                label: Text('Correo electrónico'),
                 labelStyle: TextStyle(color: Colors.black),
               ),
               keyboardType: TextInputType.emailAddress,
@@ -62,8 +85,7 @@ class _LoginState extends State<Login> {
               height: 48,
               child: ElevatedButton(
                 onPressed: () {
-                  print('Email: ${_email.text}');
-                  print('Contraseña: ${_password.text}');
+                  _signInUser(); // Llama a la función de inicio de sesión al presionar el botón
                 },
                 style: OutlinedButton.styleFrom(
                   backgroundColor: Colors.green,
@@ -72,13 +94,12 @@ class _LoginState extends State<Login> {
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: const Text('Iniciar sesión'),
+                child: const Text('Iniciar sesión'), // Texto del botón
               ),
             ),
-            const SizedBox(height: 16), // Espacio entre el botón y el texto
+            const SizedBox(height: 16),
             TextButton(
-              onPressed:
-                  _navigateToForgotPassword, // Navigate to ForgotPassword
+              onPressed: _navigateToForgotPassword,
               child: const Text(
                 'Recuperar Contraseña',
                 style: TextStyle(color: Colors.blue),
