@@ -1,4 +1,5 @@
 import 'package:finanzas_app/modules/auth/logout.dart';
+import 'package:finanzas_app/modules/auth/register.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
@@ -27,6 +28,7 @@ class MainApp extends StatelessWidget {
       routes: {
         '/': (context) => const SplashScreen(),
         '/login': (context) => const Login(),
+        '/register': (context) => const Register(),
         '/logout': (context) => const Logout(),
         '/sendEmail': (context) => const SendEmail(),
         '/verificationCode': (context) => const VerificationCode(),

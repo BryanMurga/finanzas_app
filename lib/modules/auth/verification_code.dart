@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // Importa servicios para usar TextInputFormatter
 
 class VerificationCode extends StatefulWidget {
   const VerificationCode({super.key});
 
   @override
-  State<VerificationCode> createState() => _LoginState();
+  State<VerificationCode> createState() => _VerificationCodeState();
 }
 
-class _LoginState extends State<VerificationCode> {
-  final TextEditingController _email = TextEditingController();
-  final TextEditingController _password = TextEditingController();
-  bool _isObscure = true;
+class _VerificationCodeState extends State<VerificationCode> {
+  final TextEditingController _codeController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -28,8 +27,11 @@ class _LoginState extends State<VerificationCode> {
                 label: Text('Código de verificación'),
                 labelStyle: TextStyle(color: Colors.black),
               ),
-              keyboardType: TextInputType.emailAddress,
-              controller: _email,
+              keyboardType: TextInputType.number,
+              controller: _codeController,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly, // Solo permite números
+              ],
             ),
             const SizedBox(height: 48),
             SizedBox(
@@ -37,9 +39,15 @@ class _LoginState extends State<VerificationCode> {
               height: 48,
               child: ElevatedButton(
                 onPressed: () {
-                  print('Email: ${_email.text}');
+                  String code = _codeController.text;
+                  if (code.length < 6) {
+                    // Si el código tiene menos de 6 dígitos, añade ceros al frente
+                    code = code.padLeft(6, '0');
+                  }
 
-                  // Navega a la ruta '/verificationCode'
+                  print('Código verificación: $code');
+
+                  // Navega a la ruta '/resetPassword'
                   Navigator.pushNamed(context, '/resetPassword');
                 },
                 style: OutlinedButton.styleFrom(
