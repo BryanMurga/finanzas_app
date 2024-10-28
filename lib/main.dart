@@ -1,5 +1,6 @@
 import 'package:finanzas_app/modules/auth/logout.dart';
 import 'package:finanzas_app/modules/auth/register.dart';
+import 'package:finanzas_app/modules/navegation/home.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
@@ -33,6 +34,7 @@ class MainApp extends StatelessWidget {
         '/sendEmail': (context) => const SendEmail(),
         '/verificationCode': (context) => const VerificationCode(),
         '/resetPassword': (context) => const ResetPassword(),
+        '/home': (context) => Home(),
       },
     );
   }
