@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:finanzas_app/modules/navegation/restaurant.dart';
 
 class RestaurantDescription extends StatefulWidget {
@@ -14,6 +16,7 @@ class RestaurantDescription extends StatefulWidget {
 
 class _RestaurantDescriptionState extends State<RestaurantDescription> {
   int _selectedRating = 0;
+  Completer<GoogleMapController> _mapController = Completer();
 
   @override
   void initState() {
@@ -34,25 +37,20 @@ class _RestaurantDescriptionState extends State<RestaurantDescription> {
         .doc(widget.restaurant.id);
 
     try {
-      // Realizamos una actualización atómica en Firestore
       await FirebaseFirestore.instance.runTransaction((transaction) async {
-        // Obtenemos el documento actual para leer los valores de count, numRatings y rating
         DocumentSnapshot snapshot = await transaction.get(restaurantDoc);
 
         if (!snapshot.exists) {
           throw Exception("El restaurante no existe en la base de datos");
         }
 
-        // Obtenemos los valores actuales de count, numRatings y rating
         int currentCount = snapshot['count'];
         int numRatings = snapshot['numRatings'] ?? 0;
 
-        // Calculamos los nuevos valores
-        int newCount = currentCount + _selectedRating; // Suma la nueva calificación al total
-        int newNumRatings = numRatings + 1; // Incrementa el contador de calificaciones
-        int newRating = (newCount ~/ newNumRatings); // Calcula el promedio de rating
+        int newCount = currentCount + _selectedRating;
+        int newNumRatings = numRatings + 1;
+        int newRating = (newCount ~/ newNumRatings);
 
-        // Actualizamos los campos en Firestore
         transaction.update(restaurantDoc, {
           'count': newCount,
           'numRatings': newNumRatings,
@@ -61,7 +59,8 @@ class _RestaurantDescriptionState extends State<RestaurantDescription> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Rating actualizado a $_selectedRating estrellas')),
+        SnackBar(
+            content: Text('Rating actualizado a $_selectedRating estrellas')),
       );
     } catch (e) {
       print("Error al actualizar el rating: $e");
@@ -92,6 +91,19 @@ class _RestaurantDescriptionState extends State<RestaurantDescription> {
             SizedBox(height: 10),
             Text(
               widget.restaurant.description,
+              style: TextStyle(fontSize: 16),
+            ),
+            SizedBox(height: 10),
+            Text(
+              'Ubicación:',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              'Latitud: ${widget.restaurant.latitude}',
+              style: TextStyle(fontSize: 16),
+            ),
+            Text(
+              'Longitud: ${widget.restaurant.longitude}',
               style: TextStyle(fontSize: 16),
             ),
             SizedBox(height: 20),
@@ -146,6 +158,33 @@ class _RestaurantDescriptionState extends State<RestaurantDescription> {
                   },
                 );
               }).toList(),
+            ),
+            SizedBox(height: 20),
+            Text(
+              'Mapa de Ubicación:',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10),
+            Container(
+              height: 200,
+              child: GoogleMap(
+                initialCameraPosition: CameraPosition(
+                  target: LatLng(
+                      widget.restaurant.latitude, widget.restaurant.longitude),
+                  zoom: 14,
+                ),
+                markers: {
+                  Marker(
+                    markerId: MarkerId("restaurant_location"),
+                    position: LatLng(widget.restaurant.latitude,
+                        widget.restaurant.longitude),
+                    infoWindow: InfoWindow(title: widget.restaurant.name),
+                  ),
+                },
+                onMapCreated: (GoogleMapController controller) {
+                  _mapController.complete(controller);
+                },
+              ),
             ),
           ],
         ),
