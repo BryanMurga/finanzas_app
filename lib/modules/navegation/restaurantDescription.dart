@@ -17,6 +17,7 @@ class RestaurantDescription extends StatefulWidget {
 class _RestaurantDescriptionState extends State<RestaurantDescription> {
   int _selectedRating = 0;
   Completer<GoogleMapController> _mapController = Completer();
+  
 
   @override
   void initState() {
