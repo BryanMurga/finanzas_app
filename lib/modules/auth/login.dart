@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Asegúrate de importar Firebase Auth
 
@@ -12,6 +13,41 @@ class _LoginState extends State<Login> {
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
   bool _isObscure = true;
+  late FirebaseMessaging _messaging;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeFirebaseMessaging();
+
+  }
+
+       void _initializeFirebaseMessaging() async {
+       _messaging = FirebaseMessaging.instance;
+
+       // Solicita permisos
+       NotificationSettings settings = await _messaging.requestPermission(
+         alert: true,
+         badge: true,
+         sound: true,
+       );
+
+       print('Permisos de notificación: ${settings.authorizationStatus}');
+
+       // Obtén el token
+       String? token = await _messaging.getToken();
+       print('FCM Token: $token');
+
+       // Listener para notificaciones en foreground
+       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+         print('Mensaje recibido: ${message.notification?.title}');
+         // Manejar notificación
+       });
+
+       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+         print('Notificación abierta: ${message.notification?.title}');
+       });
+     }
 
   void _navigateToForgotPassword() {
     Navigator.pushNamed(context, '/sendEmail');

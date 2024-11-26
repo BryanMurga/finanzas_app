@@ -1,5 +1,8 @@
 import Flutter
 import UIKit
+import FirebaseCore
+import FirebaseMessaging
+
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
